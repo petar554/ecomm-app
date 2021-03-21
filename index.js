@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 
 
 const app = express();
+
 // middleware - is going automatically detect whether or not we are using get or post request (not apply int he case of a get request!)
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -20,7 +21,7 @@ app.get('/', (req, res) => {
         </div>
     `);
 });
-s
+
 // middleware
 /* const bodyParser = (req, res, next) => {
     if (req.method === POST) {
