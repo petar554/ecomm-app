@@ -53,14 +53,19 @@ class UserRepo {
 
         return records.find(record => record.id === id);
     }
+
+    async delete(id) {
+        const records = await this.getAll();
+        const filteredRecords = records.filter(record => record.id !== id);
+
+        await this.writeAll(filteredRecords);
+    }
 }
 
 const test = async () => {
     const repo = new UserRepo('users.json');
 
-    const user = await repo.getOne('19d9a485');
-
-    console.log(user);
+    await repo.delete('19d9a485');
 }
 
 test();
