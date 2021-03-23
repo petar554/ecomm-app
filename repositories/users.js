@@ -17,6 +17,37 @@ class UserRepo {
             fs.writeFileSync(this.filename, '[]');
         }
     }
+
+    async getAll() {
+        return JSON.parse(
+            await fs.promises.readFile(this.filename, {
+                encoding: 'utf8'
+            })
+        );
+    }
+
+    async create(att) {
+        const records = await this.getAll();
+        records.push(att);
+
+        await this.writeAll(records);
+    }
+
+    async writeAll(att) {
+        // second argument in JSON.stringify call is a custom formatter  
+        // third argument designates the level of indentation
+        await fs.promises.writeFile(this.filename, JSON.stringify(att, null, 2));
+    }
 }
 
-const repo = new UserRepo('users.json');
+const test = async () => {
+    const repo = new UserRepo('users.json');
+    // create function has a asynchronous nature, so we make sure that we also put the await keyword right in front of it.
+    await repo.create({ email: 'petarfis@gmail.com', password: 'test12' });
+    const users = await repo.getAll();
+
+    console.log(users);
+}
+
+test();
+
