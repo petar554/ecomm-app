@@ -47,16 +47,20 @@ class UserRepo {
         // https://nodejs.org/api/crypto.html#crypto_crypto_randombytes_size_callback 
         return crypto.randomBytes(4).toString('hex');
     }
+
+    async getOne(id) {
+        const records = await this.getAll();
+
+        return records.find(record => record.id === id);
+    }
 }
 
 const test = async () => {
     const repo = new UserRepo('users.json');
-    // create function has a asynchronous nature, so we make sure that we also put the await keyword right in front of it.
-    await repo.create({ email: 'belka12@gmail.com', password: 'hello' });
-    const users = await repo.getAll();
 
-    console.log(repo.randomId());
-    console.log(users);
+    const user = await repo.getOne('19d9a485');
+
+    console.log(user);
 }
 
 test();
