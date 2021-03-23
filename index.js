@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-// middleware - is going automatically detect whether or not we are using get or post request (not apply int he case of a get request!)
+// middleware - is going automatically detect whether or not we are using get or post request (not apply in the case of a get request!)
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // req object represents incoming request from the browser into web server

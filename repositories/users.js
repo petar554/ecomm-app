@@ -1,4 +1,6 @@
 const fs = require('fs');
+const crypto = require('crypto');
+
 
 class UserRepo {
     // constructor functions get called instantly whenever we create a new instance of a class 
@@ -27,6 +29,8 @@ class UserRepo {
     }
 
     async create(att) {
+        att.id = this.randomId();
+
         const records = await this.getAll();
         records.push(att);
 
@@ -38,14 +42,20 @@ class UserRepo {
         // third argument designates the level of indentation
         await fs.promises.writeFile(this.filename, JSON.stringify(att, null, 2));
     }
+
+    randomId() {
+        // https://nodejs.org/api/crypto.html#crypto_crypto_randombytes_size_callback 
+        return crypto.randomBytes(4).toString('hex');
+    }
 }
 
 const test = async () => {
     const repo = new UserRepo('users.json');
     // create function has a asynchronous nature, so we make sure that we also put the await keyword right in front of it.
-    await repo.create({ email: 'petarfis@gmail.com', password: 'test12' });
+    await repo.create({ email: 'belka12@gmail.com', password: 'hello' });
     const users = await repo.getAll();
 
+    console.log(repo.randomId());
     console.log(users);
 }
 
