@@ -50,7 +50,6 @@ class UserRepo {
 
     async getOne(id) {
         const records = await this.getAll();
-
         return records.find(record => record.id === id);
     }
 
@@ -60,12 +59,25 @@ class UserRepo {
 
         await this.writeAll(filteredRecords);
     }
+
+    async update(id, att) {
+        const records = await this.getAll();
+        const record = records.find(record => record.id === id);
+
+        if (!record) {
+            throw new Error(`Record with id ${id} not found`);
+        }
+
+        //This is going to take all the different properties and key value pairs inside that att object and copy them one by one into the record object 
+        Object.assign(record, att);
+        await this.writeAll(records);
+    }
 }
 
 const test = async () => {
     const repo = new UserRepo('users.json');
 
-    await repo.delete('19d9a485');
+    await repo.update('e62a04ed', { password: 'madird21' });
 }
 
 test();
