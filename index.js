@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieSession = require('cookie-session');
 const usersRepo = require('./repositories/users');
 
 
@@ -7,6 +8,11 @@ const app = express();
 
 // middleware - is going automatically detect whether or not we are using get or post request (not apply in the case of a get request!)
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieSession({
+    // this Keyes are array of strings (essentially the encryption keys that is going to be used to encrypt all that data)
+    keys: [sdjnkadnkjasbd]
+}));
+
 
 // req object represents incoming request from the browser into web server
 // res represents outgoing response from server back to the browser
@@ -51,6 +57,14 @@ app.post('/', async (req, res) => {
     if (password !== passwordConfirmation) {
         res.send('Passwords must match');
     }
+
+    // create user in user repo
+    const newUser = await usersRepo.create({ email, password });
+
+    // the cookie session library adds exactly one additional property to the req object (req.session);
+    // store the id of that user inside the users cookie
+    //req.session - added by cookie session (req.session is a plain javascript object)
+    req.session.userId = newUser.id;
 
     res.send('acc created');
 });
