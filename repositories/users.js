@@ -35,6 +35,8 @@ class UserRepo {
         records.push(att);
 
         await this.writeAll(records);
+
+        return att;
     }
 
     async writeAll(att) {
@@ -92,4 +94,3 @@ class UserRepo {
 }
 
 module.exports = new UserRepo('users.json');
-    
