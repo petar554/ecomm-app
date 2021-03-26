@@ -1,6 +1,9 @@
 const fs = require('fs');
 const crypto = require('crypto');
+const util = require('util');
 
+
+const scrypt = util.promisify(crypto.scrypt);
 
 class UserRepo {
     // constructor functions get called instantly whenever we create a new instance of a class 
@@ -29,14 +32,23 @@ class UserRepo {
     }
 
     async create(att) {
+        // att === {email: '', password: ''}
         att.id = this.randomId();
 
+        const salt = crypto.randomBytes(8).toString('hex');
+        const buf = await scrypt(att.password, salt, 64);
+
         const records = await this.getAll();
-        records.push(att);
+        const record = {
+            ...att,
+            password: `${buf.toString('hex')}.${salt}}`
+        };
+
+        records.push(record);
 
         await this.writeAll(records);
 
-        return att;
+        return record;
     }
 
     async writeAll(att) {
