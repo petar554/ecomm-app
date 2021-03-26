@@ -73,7 +73,9 @@ app.post('/signup', async (req, res) => {
 app.get('/signout', (req, res) => {
     // if we want to sign out our user, we have to tell the browser to "forget" all the information that is stored inside their cookie.
     req.session = null;
+    res.send('You are logged out');
 });
+
 
 app.get('/signin', (req, res) => {
     res.send(`
@@ -89,6 +91,7 @@ app.get('/signin', (req, res) => {
 });
 
 app.post('/signin', async (req, res) => {
+    // req.body is all the information that was entered into our form
     const { email, password, } = req.body;
 
     const user = await usersRepo.getOneBy({ email });
@@ -96,7 +99,12 @@ app.post('/signin', async (req, res) => {
     if (!user) {
         return res.send('Email not found');
     }
-    if (user.password !== password) {
+
+    const validPassword = await usersRepo.comparePasswords(
+        user.password,
+        password
+    );
+    if (!validPassword) {
         return res.send('Invalid password');
     }
 

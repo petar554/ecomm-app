@@ -51,6 +51,13 @@ class UserRepo {
         return record;
     }
 
+    async comparePasswords(saved, supplied) {
+        const [hashed, salt] = saved.split('.');
+        const hashedSuppliedBuf = await scrypt(supplied, salt, 64);
+
+        return hashed === hashedSuppliedBuf.toString('hex');
+    }
+
     async writeAll(att) {
         // second argument in JSON.stringify call is a custom formatter  
         // third argument designates the level of indentation
