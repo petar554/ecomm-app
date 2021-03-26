@@ -10,13 +10,13 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieSession({
     // this Keyes are array of strings (essentially the encryption keys that is going to be used to encrypt all that data)
-    keys: [sdjnkadnkjasbd]
+    keys: ['sdjnkadnkjasbd']
 }));
 
 
 // req object represents incoming request from the browser into web server
 // res represents outgoing response from server back to the browser
-app.get('/', (req, res) => {
+app.get('/signup', (req, res) => {
     res.send(`
         <div>
             <form method='POST'>
@@ -47,7 +47,7 @@ app.get('/', (req, res) => {
     }
 } */
 
-app.post('/', async (req, res) => {
+app.post('/signup', async (req, res) => {
     const { email, password, passwordConfirmation } = req.body;
 
     const existingUser = await usersRepo.getOneBy({ email });
@@ -63,11 +63,47 @@ app.post('/', async (req, res) => {
 
     // the cookie session library adds exactly one additional property to the req object (req.session);
     // store the id of that user inside the users cookie
-    //req.session - added by cookie session (req.session is a plain javascript object)
+    // req.session - added by cookie session (req.session is a plain javascript object)
     req.session.userId = newUser.id;
 
     res.send('acc created');
 });
+
+
+app.get('/signout', (req, res) => {
+    // if we want to sign out our user, we have to tell the browser to "forget" all the information that is stored inside their cookie.
+    req.session = null;
+});
+
+app.get('/signin', (req, res) => {
+    res.send(`
+        <div>
+            <form method='POST'>
+                <input name='email' placeholder='email'/>
+                <input name='password' placeholder='password'/>
+                <input name='passwordConfirmation' placeholder='password confirmation'/>
+                <button>Sign Up</button>
+            </form>
+        </div>
+    `);
+});
+
+app.post('/signin', async (req, res) => {
+    const { email, password, } = req.body;
+
+    const user = await usersRepo.getOneBy({ email });
+
+    if (!user) {
+        return res.send('Email not found');
+    }
+    if (user.password !== password) {
+        return res.send('Invalid password');
+    }
+
+    res.session.userId = user.id
+    res.send('You are signed in!');
+});
+
 
 app.listen(3000, () => {
     console.log('listening')
